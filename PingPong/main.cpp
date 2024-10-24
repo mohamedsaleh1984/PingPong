@@ -11,10 +11,13 @@ struct RenderState {
 	void* bufferMemory = nullptr;
 };
 
+#include "platform_common.cpp"
+
 global_variable RenderState _renderState;
+global_variable Input _input;
 
 #include "renderer.cpp";
-
+#include "game.cpp"
 LRESULT CALLBACK window_callback(HWND    hWnd, UINT    Msg, WPARAM  wParam, LPARAM  lParam)
 {
 	LRESULT result = 0;
@@ -59,6 +62,13 @@ LRESULT CALLBACK window_callback(HWND    hWnd, UINT    Msg, WPARAM  wParam, LPAR
 	return result;
 }
 
+
+void resetChangeOnEachFrame() {
+	for (int i = 0; i < BUTTON_COUNT; i++) {
+		_input.buttons[i].changed = false;
+	}
+}
+
 int  WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR     lpCmdLine, int       nShowCmd)
 {
 	// Window class
@@ -78,19 +88,36 @@ int  WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR     lpCmdLine, 
 	// Main Windows Loop
 
 	while (isRunning) {
+
+		resetChangeOnEachFrame();
+
 		// Input
 		MSG message;
 		while (PeekMessage(&message, windowHandle, 0, 0, PM_REMOVE)) {
-			TranslateMessage(&message);
-			DispatchMessage(&message);
+			switch (message.message) {
+			case WM_KEYUP:
+				break;
+			case WM_KEYDOWN:{
+				unsigned int vk_Code = (unsigned int)message.wParam;
+				bool  isDown = ((message.lParam & (1 << 31)) == 0);
+
+				switch (vk_Code) {
+				case VK_UP: {
+					_input.buttons[BUTTON_UP].isDown = isDown;
+					_input.buttons[BUTTON_UP].changed = true;
+				}
+					break;
+				}
+			}
+				break;
+			default:
+				TranslateMessage(&message);
+				DispatchMessage(&message);
+			}
 		}
 
 		//  Simulate
-		clearScreen(0xff5500);
-		drawRect(0, 0, 1, 1, 0xff0000);
-		drawRect(30, 40, 5, 5, 0xffC0A0);
-		drawRect(-20, 20, 8, 8, 0xff0022);/**/
-
+		simulateGame(&_input);
 
 		//	Render
 		StretchDIBits(hdc, 0, 0,
