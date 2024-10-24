@@ -7,17 +7,35 @@ bool isRunning = true;
 LRESULT CALLBACK window_callback(HWND    hWnd, UINT    Msg, WPARAM  wParam, LPARAM  lParam)
 {
 	LRESULT result = 0;
+	void* memory = nullptr;
 	switch (Msg)
 	{
-	case WM_CLOSE:
-	case WM_DESTROY:
-		// break the main window loop and exit the window.
-		isRunning = false;
-		break;
+		case WM_CLOSE:
+		case WM_DESTROY: {
+			// break the main window loop and exit the window.
+			isRunning = false;
 
-	default:
-		result = DefWindowProc(hWnd, Msg, wParam, lParam);
-		break;
+		}break;
+
+		case WM_SIZE: {
+			RECT rect;
+			GetClientRect(hWnd, &rect);
+			int width = rect.right - rect.left;
+			int height = rect.bottom - rect.top;
+
+			// number of pixels = w*h and each pixel is unsigned int
+			int bufferSize = width * height * sizeof(unsigned int);
+
+			//free if it's allocated...
+			if (memory) {
+				VirtualFree(memory, 0, MEM_RELEASE);
+			}
+			memory = VirtualAlloc(0, bufferSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+		}break;
+
+		default:
+			result = DefWindowProc(hWnd, Msg, wParam, lParam);
+			break;
 	}
 	return result;
 }
@@ -34,14 +52,10 @@ int  WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR     lpCmdLine, 
 	RegisterClass(&window_class);
 
 	// Create window
-	HWND windowHandle = CreateWindow(
-		window_class.lpszClassName,
-		L"My First Game",
-		WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-		CW_USEDEFAULT, CW_USEDEFAULT,
-		1280, 720, 0, 0, hInstance, 0);
+	unsigned int styles = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
+	HWND windowHandle = CreateWindow(window_class.lpszClassName, L"My First Game", styles, CW_USEDEFAULT, CW_USEDEFAULT, 1280, 720, 0, 0, hInstance, 0);
 
-	// Windows Loop
+	// Main Windows Loop
 
 	while (isRunning) {
 		// Input
@@ -57,4 +71,4 @@ int  WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR     lpCmdLine, 
 
 
 	return 0;
-}
+};
