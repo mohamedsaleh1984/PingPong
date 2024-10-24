@@ -67,6 +67,37 @@ void processKeys(Input& input,int button, unsigned int vk, bool isDown) {
 	input.buttons[button].changed = true;
 }
 
+void processMessages(MSG message, Input& input) {
+	switch (message.message) {
+	case WM_KEYUP:
+	case WM_KEYDOWN: {
+		unsigned int vk_Code = (unsigned int)message.wParam;
+		bool  isDown = ((message.lParam & (1 << 31)) == 0);
+
+		switch (vk_Code) {
+		case VK_UP:
+			processKeys(input, BUTTON_UP, VK_UP, isDown);
+			break;
+		case VK_DOWN:
+			processKeys(input, BUTTON_DOWN, VK_DOWN, isDown);
+			break;
+		case VK_RIGHT:
+			processKeys(input, BUTTON_RIGHT, VK_RIGHT, isDown);
+			break;
+		case VK_LEFT:
+			processKeys(input, BUTTON_LEFT, VK_LEFT, isDown);
+			break;
+		default:
+			break;
+		}
+	}
+				   break;
+	default:
+		TranslateMessage(&message);
+		DispatchMessage(&message);
+	}
+}
+
 int  WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR     lpCmdLine, int       nShowCmd)
 {
 	// Window class
@@ -101,34 +132,7 @@ int  WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR     lpCmdLine, 
 
 		// fetch the events
 		while (PeekMessage(&message, windowHandle, 0, 0, PM_REMOVE)) {
-			switch (message.message) {
-			case WM_KEYUP:
-			case WM_KEYDOWN:{
-				unsigned int vk_Code = (unsigned int)message.wParam;
-				bool  isDown = ((message.lParam & (1 << 31)) == 0);
-
-				switch (vk_Code) {
-				case VK_UP: 
-					processKeys(input, BUTTON_UP, VK_UP, isDown);
-					break;
-				case VK_DOWN:
-					processKeys(input, BUTTON_DOWN, VK_DOWN, isDown);
-					break;
-				case VK_RIGHT:
-					processKeys(input, BUTTON_RIGHT, VK_RIGHT, isDown);
-					break;
-				case VK_LEFT:
-					processKeys(input, BUTTON_LEFT, VK_LEFT, isDown);
-					break;
-				default:
-					break;
-				}
-			}
-				break;
-			default:
-				TranslateMessage(&message);
-				DispatchMessage(&message);
-			}
+			processMessages(message, input);
 		}
 
 		//  Simulate
