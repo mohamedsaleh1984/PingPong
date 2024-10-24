@@ -3,11 +3,20 @@
 using namespace std;
 
 bool isRunning = true;
-BITMAPINFO bufferBitmapInfo;
-int width;
-int height;
-int bufferSize;
-void* bufferMemory = nullptr;
+
+struct RenderState {
+	int width;
+	int height;
+	BITMAPINFO bufferBitmapInfo;
+	int bufferSize;
+	void* bufferMemory = nullptr;
+};
+
+RenderState _renderState;
+ 
+
+
+
 
 LRESULT CALLBACK window_callback(HWND    hWnd, UINT    Msg, WPARAM  wParam, LPARAM  lParam)
 {
@@ -25,24 +34,24 @@ LRESULT CALLBACK window_callback(HWND    hWnd, UINT    Msg, WPARAM  wParam, LPAR
 	case WM_SIZE: {
 		RECT rect;
 		GetClientRect(hWnd, &rect);
-		width = rect.right - rect.left;
-		height = rect.bottom - rect.top;
+		_renderState.width = rect.right - rect.left;
+		_renderState.height = rect.bottom - rect.top;
 
 		// number of pixels = w*h and each pixel is unsigned int
-		bufferSize = width * height * sizeof(unsigned int);
+		_renderState.bufferSize = _renderState.width * _renderState.height * sizeof(unsigned int);
 
 		//free if it's allocated...
-		if (bufferMemory) {
-			VirtualFree(bufferMemory, 0, MEM_RELEASE);
+		if (_renderState.bufferMemory) {
+			VirtualFree(_renderState.bufferMemory, 0, MEM_RELEASE);
 		}
-		bufferMemory = VirtualAlloc(0, bufferSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+		_renderState.bufferMemory = VirtualAlloc(0, _renderState.bufferSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 
-		bufferBitmapInfo.bmiHeader.biSize = sizeof(bufferBitmapInfo.bmiHeader);
-		bufferBitmapInfo.bmiHeader.biWidth = width;
-		bufferBitmapInfo.bmiHeader.biHeight = height;
-		bufferBitmapInfo.bmiHeader.biPlanes = 1;
-		bufferBitmapInfo.bmiHeader.biBitCount = 32;
-		bufferBitmapInfo.bmiHeader.biCompression = BI_RGB;
+		_renderState.bufferBitmapInfo.bmiHeader.biSize = sizeof(_renderState.bufferBitmapInfo.bmiHeader);
+		_renderState.bufferBitmapInfo.bmiHeader.biWidth = _renderState.width;
+		_renderState.bufferBitmapInfo.bmiHeader.biHeight = _renderState.height;
+		_renderState.bufferBitmapInfo.bmiHeader.biPlanes = 1;
+		_renderState.bufferBitmapInfo.bmiHeader.biBitCount = 32;
+		_renderState.bufferBitmapInfo.bmiHeader.biCompression = BI_RGB;
 
 	}break;
 
@@ -80,15 +89,21 @@ int  WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR     lpCmdLine, 
 		}
 
 		//  Simulate
-		unsigned int* pixel = (unsigned int*) bufferMemory;
-		for (int y = 0; y < height; ++y) {
-			for (int x = 0; x < width; ++x) {
+		unsigned int* pixel = (unsigned int*)_renderState.bufferMemory;
+		for (int y = 0; y < _renderState.height; ++y) {
+			for (int x = 0; x < _renderState.width; ++x) {
 				// Change the value of each pixel
 				*pixel++ = x*y;
 			}
 		}
 		//	Render
-		StretchDIBits(hdc, 0, 0, width, height, 0, 0, width, height, bufferMemory, &bufferBitmapInfo, DIB_RGB_COLORS, SRCCOPY);
+		StretchDIBits(hdc, 0, 0, 
+			_renderState.width, 
+			_renderState.height, 0, 0, 
+			_renderState.width, 
+			_renderState.height, 
+			_renderState.bufferMemory, 
+			&_renderState.bufferBitmapInfo, DIB_RGB_COLORS, SRCCOPY);
 	}
 
 
