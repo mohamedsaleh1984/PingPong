@@ -1,4 +1,4 @@
-bool IsButtonDown(Input* input,enumButtons button) {
+bool IsDown(Input* input,enumButtons button) {
 	return input->buttons[button].isDown;
 }
 bool IsPressed(Input* input, enumButtons button) {
@@ -10,25 +10,25 @@ bool IsReleased(Input* input, enumButtons button) {
 
 float player_pos_x = 0.f;
 float player_pos_y = 0.f;
-float speed = 1.f;
+float speed = 0.2f;
 
 
 internal void simulateGame(Input* input) {
 	clearScreen(0xff5500);
 
-	if (IsPressed(input,BUTTON_UP)) {
+	if (IsDown(input,BUTTON_UP)) {
 		player_pos_y += speed;
 	}
 
-	if (IsPressed(input, BUTTON_DOWN)) {
+	if (IsDown(input, BUTTON_DOWN)) {
 		player_pos_y -= speed;
 	}
 
-	if (IsPressed(input, BUTTON_LEFT)) {
+	if (IsDown(input, BUTTON_LEFT)) {
 		player_pos_x -= speed;
 	}
 
-	if (IsPressed(input, BUTTON_RIGHT)) {
+	if (IsDown(input, BUTTON_RIGHT)) {
 		player_pos_x += speed;
 	}
 
