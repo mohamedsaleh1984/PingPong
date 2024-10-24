@@ -84,7 +84,7 @@ int  WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR     lpCmdLine, 
 		for (int y = 0; y < height; ++y) {
 			for (int x = 0; x < width; ++x) {
 				// Change the value of each pixel
-				*pixel++ = 0xff5500;
+				*pixel++ = x*y;
 			}
 		}
 		//	Render
