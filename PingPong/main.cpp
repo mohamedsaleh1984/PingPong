@@ -41,7 +41,7 @@ LRESULT CALLBACK window_callback(HWND    hWnd, UINT    Msg, WPARAM  wParam, LPAR
 		if (_renderState.bufferMemory) {
 			VirtualFree(_renderState.bufferMemory, 0, MEM_RELEASE);
 		}
-		_renderState.bufferMemory = VirtualAlloc(0,bufferSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+		_renderState.bufferMemory = VirtualAlloc(0, bufferSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 
 		_renderState.bufferBitmapInfo.bmiHeader.biSize = sizeof(_renderState.bufferBitmapInfo.bmiHeader);
 		_renderState.bufferBitmapInfo.bmiHeader.biWidth = _renderState.width;
@@ -87,14 +87,18 @@ int  WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR     lpCmdLine, 
 
 		//  Simulate
 		clearScreen(0xff5500);
-		drawRect(50, 50, 10, 20, 0xff0000);
+		drawRect(0, 0, 0.1, 0.1, 0xff0000);
+		drawRect(.3, .3, 0.05, 0.05, 0xffC0A0);
+		drawRect(-.25, 0, 0.08, 0.03, 0xff0022);/**/
+
+
 		//	Render
-		StretchDIBits(hdc, 0, 0, 
-			_renderState.width, 
-			_renderState.height, 0, 0, 
-			_renderState.width, 
-			_renderState.height, 
-			_renderState.bufferMemory, 
+		StretchDIBits(hdc, 0, 0,
+			_renderState.width,
+			_renderState.height, 0, 0,
+			_renderState.width,
+			_renderState.height,
+			_renderState.bufferMemory,
 			&_renderState.bufferBitmapInfo, DIB_RGB_COLORS, SRCCOPY);
 	}
 

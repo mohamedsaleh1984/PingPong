@@ -11,7 +11,7 @@ internal int clamp(int min, int val, int max) {
 }
 
 
-internal void 
+internal void
 renderBackground() {
 	unsigned int* pixel = (unsigned int*)_renderState.bufferMemory;
 	for (int y = 0; y < _renderState.height; ++y) {
@@ -37,6 +37,7 @@ clearScreen(unsigned int color) {
 internal void
 drawRectInPixels(int x0, int y0, int x1, int y1, unsigned int color) {
 
+
 	// make sure the dimension of drawing within the range of the screen.
 	x0 = clamp(0, x0, _renderState.width);
 	x1 = clamp(0, x1, _renderState.width);
@@ -54,14 +55,23 @@ drawRectInPixels(int x0, int y0, int x1, int y1, unsigned int color) {
 }
 
 
-internal void 
-drawRect(float x, float y, float halfSizeX, float halfSizeY, unsigned int color){
-	// Change to pixels
-	int x0 = (int)(x - halfSizeX);
-	int x1 = (int)(x + halfSizeX);
+internal void
+drawRect(float x, float y, float halfSizeX, float halfSizeY, unsigned int color) {
 
-	int y0 = (int)(y - halfSizeY);
-	int y1 = (int)(y + halfSizeY);
+	x *= _renderState.height;
+	y *= _renderState.height;
+	halfSizeX *= _renderState.height;
+	halfSizeY *= _renderState.height;
+
+	x += _renderState.width / 2.f;
+	y += _renderState.height / 2.f;
+
+	// Change to pixels
+	int x0 = x - halfSizeX;
+	int x1 = x + halfSizeX;
+
+	int y0 = y - halfSizeY;
+	int y1 = y + halfSizeY;
 
 	drawRectInPixels(x0, y0, x1, y1, color);
 }
