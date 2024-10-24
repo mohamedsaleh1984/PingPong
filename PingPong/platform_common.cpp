@@ -2,7 +2,7 @@ struct ButtonState {
 	bool isDown;
 	bool changed;
 };
-enum  
+enum  enumButtons
 {
 	BUTTON_UP,
 	BUTTON_DOWN,
