@@ -78,8 +78,15 @@ int  WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR     lpCmdLine, 
 			TranslateMessage(&message);
 			DispatchMessage(&message);
 		}
-		//  Simulate
 
+		//  Simulate
+		unsigned int* pixel = (unsigned int*) bufferMemory;
+		for (int y = 0; y < height; ++y) {
+			for (int x = 0; x < width; ++x) {
+				// Change the value of each pixel
+				*pixel++ = 0xff5500;
+			}
+		}
 		//	Render
 		StretchDIBits(hdc, 0, 0, width, height, 0, 0, width, height, bufferMemory, &bufferBitmapInfo, DIB_RGB_COLORS, SRCCOPY);
 	}
