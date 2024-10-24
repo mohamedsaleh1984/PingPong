@@ -1,4 +1,3 @@
-#include <iostream>
 #include <Windows.h>
 using namespace std;
 
@@ -12,6 +11,8 @@ struct RenderState {
 };
 
 RenderState _renderState;
+
+#include "renderer.cpp";
 
 LRESULT CALLBACK window_callback(HWND    hWnd, UINT    Msg, WPARAM  wParam, LPARAM  lParam)
 {
@@ -84,13 +85,7 @@ int  WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR     lpCmdLine, 
 		}
 
 		//  Simulate
-		unsigned int* pixel = (unsigned int*)_renderState.bufferMemory;
-		for (int y = 0; y < _renderState.height; ++y) {
-			for (int x = 0; x < _renderState.width; ++x) {
-				// Change the value of each pixel
-				*pixel++ = x*y;
-			}
-		}
+		renderBackground();
 		//	Render
 		StretchDIBits(hdc, 0, 0, 
 			_renderState.width, 
