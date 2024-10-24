@@ -8,15 +8,10 @@ struct RenderState {
 	int width;
 	int height;
 	BITMAPINFO bufferBitmapInfo;
-	int bufferSize;
 	void* bufferMemory = nullptr;
 };
 
 RenderState _renderState;
- 
-
-
-
 
 LRESULT CALLBACK window_callback(HWND    hWnd, UINT    Msg, WPARAM  wParam, LPARAM  lParam)
 {
@@ -38,13 +33,13 @@ LRESULT CALLBACK window_callback(HWND    hWnd, UINT    Msg, WPARAM  wParam, LPAR
 		_renderState.height = rect.bottom - rect.top;
 
 		// number of pixels = w*h and each pixel is unsigned int
-		_renderState.bufferSize = _renderState.width * _renderState.height * sizeof(unsigned int);
+		int bufferSize = _renderState.width * _renderState.height * sizeof(unsigned int);
 
 		//free if it's allocated...
 		if (_renderState.bufferMemory) {
 			VirtualFree(_renderState.bufferMemory, 0, MEM_RELEASE);
 		}
-		_renderState.bufferMemory = VirtualAlloc(0, _renderState.bufferSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+		_renderState.bufferMemory = VirtualAlloc(0,bufferSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 
 		_renderState.bufferBitmapInfo.bmiHeader.biSize = sizeof(_renderState.bufferBitmapInfo.bmiHeader);
 		_renderState.bufferBitmapInfo.bmiHeader.biWidth = _renderState.width;
