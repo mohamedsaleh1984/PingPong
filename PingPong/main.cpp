@@ -3,39 +3,52 @@
 using namespace std;
 
 bool isRunning = true;
+BITMAPINFO bufferBitmapInfo;
+int width;
+int height;
+int bufferSize;
+void* bufferMemory = nullptr;
 
 LRESULT CALLBACK window_callback(HWND    hWnd, UINT    Msg, WPARAM  wParam, LPARAM  lParam)
 {
 	LRESULT result = 0;
-	void* memory = nullptr;
+
 	switch (Msg)
 	{
-		case WM_CLOSE:
-		case WM_DESTROY: {
-			// break the main window loop and exit the window.
-			isRunning = false;
+	case WM_CLOSE:
+	case WM_DESTROY: {
+		// break the main window loop and exit the window.
+		isRunning = false;
 
-		}break;
+	}break;
 
-		case WM_SIZE: {
-			RECT rect;
-			GetClientRect(hWnd, &rect);
-			int width = rect.right - rect.left;
-			int height = rect.bottom - rect.top;
+	case WM_SIZE: {
+		RECT rect;
+		GetClientRect(hWnd, &rect);
+		width = rect.right - rect.left;
+		height = rect.bottom - rect.top;
 
-			// number of pixels = w*h and each pixel is unsigned int
-			int bufferSize = width * height * sizeof(unsigned int);
+		// number of pixels = w*h and each pixel is unsigned int
+		bufferSize = width * height * sizeof(unsigned int);
 
-			//free if it's allocated...
-			if (memory) {
-				VirtualFree(memory, 0, MEM_RELEASE);
-			}
-			memory = VirtualAlloc(0, bufferSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
-		}break;
+		//free if it's allocated...
+		if (bufferMemory) {
+			VirtualFree(bufferMemory, 0, MEM_RELEASE);
+		}
+		bufferMemory = VirtualAlloc(0, bufferSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 
-		default:
-			result = DefWindowProc(hWnd, Msg, wParam, lParam);
-			break;
+		bufferBitmapInfo.bmiHeader.biSize = sizeof(bufferBitmapInfo.bmiHeader);
+		bufferBitmapInfo.bmiHeader.biWidth = width;
+		bufferBitmapInfo.bmiHeader.biHeight = height;
+		bufferBitmapInfo.bmiHeader.biPlanes = 1;
+		bufferBitmapInfo.bmiHeader.biBitCount = 32;
+		bufferBitmapInfo.bmiHeader.biCompression = BI_RGB;
+
+	}break;
+
+	default:
+		result = DefWindowProc(hWnd, Msg, wParam, lParam);
+		break;
 	}
 	return result;
 }
@@ -54,6 +67,7 @@ int  WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR     lpCmdLine, 
 	// Create window
 	unsigned int styles = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
 	HWND windowHandle = CreateWindow(window_class.lpszClassName, L"My First Game", styles, CW_USEDEFAULT, CW_USEDEFAULT, 1280, 720, 0, 0, hInstance, 0);
+	HDC hdc = GetDC(windowHandle);
 
 	// Main Windows Loop
 
@@ -67,6 +81,7 @@ int  WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR     lpCmdLine, 
 		//  Simulate
 
 		//	Render
+		StretchDIBits(hdc, 0, 0, width, height, 0, 0, width, height, bufferMemory, &bufferBitmapInfo, DIB_RGB_COLORS, SRCCOPY);
 	}
 
 
