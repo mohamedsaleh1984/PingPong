@@ -85,7 +85,8 @@ int  WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR     lpCmdLine, 
 		}
 
 		//  Simulate
-		renderBackground();
+		clearScreen(0xff5500);
+		drawRect(50, 50, 200, 500, 0xff0000);
 		//	Render
 		StretchDIBits(hdc, 0, 0, 
 			_renderState.width, 
