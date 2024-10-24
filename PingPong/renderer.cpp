@@ -1,4 +1,5 @@
 #include "utilities.cpp"
+global_variable float renderScale = 0.01f;
 
 internal int clamp(int min, int val, int max) {
 	if (val < min)
@@ -58,10 +59,10 @@ drawRectInPixels(int x0, int y0, int x1, int y1, unsigned int color) {
 internal void
 drawRect(float x, float y, float halfSizeX, float halfSizeY, unsigned int color) {
 
-	x *= _renderState.height;
-	y *= _renderState.height;
-	halfSizeX *= _renderState.height;
-	halfSizeY *= _renderState.height;
+	x *= _renderState.height*renderScale;
+	y *= _renderState.height * renderScale;
+	halfSizeX *= _renderState.height * renderScale;
+	halfSizeY *= _renderState.height * renderScale;
 
 	x += _renderState.width / 2.f;
 	y += _renderState.height / 2.f;

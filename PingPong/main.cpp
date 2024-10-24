@@ -87,9 +87,9 @@ int  WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR     lpCmdLine, 
 
 		//  Simulate
 		clearScreen(0xff5500);
-		drawRect(0, 0, 0.1, 0.1, 0xff0000);
-		drawRect(.3, .3, 0.05, 0.05, 0xffC0A0);
-		drawRect(-.25, 0, 0.08, 0.03, 0xff0022);/**/
+		drawRect(0, 0, 1, 1, 0xff0000);
+		drawRect(30, 40, 5, 5, 0xffC0A0);
+		drawRect(-20, 20, 8, 8, 0xff0022);/**/
 
 
 		//	Render
