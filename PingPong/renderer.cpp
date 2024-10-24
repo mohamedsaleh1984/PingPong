@@ -1,6 +1,18 @@
 #include "utilities.cpp"
 
-void renderBackground() {
+internal int clamp(int min, int val, int max) {
+	if (val < min)
+		return min;
+
+	if (val > max)
+		return max;
+
+	return val;
+}
+
+
+internal void 
+renderBackground() {
 	unsigned int* pixel = (unsigned int*)_renderState.bufferMemory;
 	for (int y = 0; y < _renderState.height; ++y) {
 		for (int x = 0; x < _renderState.width; ++x) {
@@ -10,7 +22,8 @@ void renderBackground() {
 	}
 }
 
-void clearScreen(unsigned int color) {
+internal void
+clearScreen(unsigned int color) {
 
 	unsigned int* pixel = (unsigned int*)_renderState.bufferMemory;
 	for (int y = 0; y < _renderState.height; ++y) {
@@ -21,16 +34,16 @@ void clearScreen(unsigned int color) {
 	}
 }
 
+internal void
+drawRectInPixels(int x0, int y0, int x1, int y1, unsigned int color) {
 
-void drawRect(int x0, int y0, int x1, int y1, unsigned int color) {
-
-	//make sure the dimension of drawing within the range of the screen.
+	// make sure the dimension of drawing within the range of the screen.
 	x0 = clamp(0, x0, _renderState.width);
 	x1 = clamp(0, x1, _renderState.width);
 	y0 = clamp(0, y0, _renderState.height);
 	y1 = clamp(0, y1, _renderState.height);
 
-
+	// Draw the pixels to the memory buffer
 	for (int y = y0; y < y1; ++y) {
 		unsigned int* pixel = (unsigned int*)_renderState.bufferMemory + x0 + y * _renderState.width;
 		for (int x = x0; x < x1; ++x) {
@@ -39,3 +52,17 @@ void drawRect(int x0, int y0, int x1, int y1, unsigned int color) {
 		}
 	}
 }
+
+
+internal void 
+drawRect(float x, float y, float halfSizeX, float halfSizeY, unsigned int color){
+	// Change to pixels
+	int x0 = (int)(x - halfSizeX);
+	int x1 = (int)(x + halfSizeX);
+
+	int y0 = (int)(y - halfSizeY);
+	int y1 = (int)(y + halfSizeY);
+
+	drawRectInPixels(x0, y0, x1, y1, color);
+}
+

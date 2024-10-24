@@ -1,7 +1,8 @@
+#include "utilities.cpp"
 #include <Windows.h>
 using namespace std;
 
-bool isRunning = true;
+global_variable bool isRunning = true;
 
 struct RenderState {
 	int width;
@@ -10,7 +11,7 @@ struct RenderState {
 	void* bufferMemory = nullptr;
 };
 
-RenderState _renderState;
+global_variable RenderState _renderState;
 
 #include "renderer.cpp";
 
@@ -86,7 +87,7 @@ int  WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR     lpCmdLine, 
 
 		//  Simulate
 		clearScreen(0xff5500);
-		drawRect(50, 50, 200, 500, 0xff0000);
+		drawRect(50, 50, 10, 20, 0xff0000);
 		//	Render
 		StretchDIBits(hdc, 0, 0, 
 			_renderState.width, 
