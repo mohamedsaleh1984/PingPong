@@ -21,6 +21,8 @@ float ball_velY = 0.f;
 float ballHalfSize = 1.f;
 const float ball_velocity_coef = 0.75;
 
+
+
 // letters and numbers
 const char* letters[][7] = {
 	" 00",
@@ -320,110 +322,138 @@ static void aiStrategy2(float* player1_acceleration) {
 	if (*player1_acceleration < -1300)*player1_acceleration = -1300;
 }
 
+
+// Game Mode
+enum GameMode {
+	GM_MENU,
+	GM_GAMEPLAY
+};
+
+GameMode currentGameMode = GM_MENU;
+bool selectedButton = 0;
+
 static void simulateGame(Input* input, float delta) {
 	clearScreen(0xff5500);
 
 	// arena
 	drawRect(0, 0, arenaHalfSizeX, arenaHalfSizeY, 0xffaa33);
 
-	/******************************************************************************************/
-	// Player 1 Settings
-	float player1_acceleration = 0.f;
+	if (currentGameMode == GM_GAMEPLAY) {
+		/******************************************************************************************/
+		// Player 1 Settings
+		float player1_acceleration = 0.f;
 #if 0
-	if (IsDown(input, BUTTON_UP)) player1_acceleration += ACCELERATION_FACTOR;
-	if (IsDown(input, BUTTON_DOWN))  player1_acceleration -= ACCELERATION_FACTOR;
+		if (IsDown(input, BUTTON_UP)) player1_acceleration += ACCELERATION_FACTOR;
+		if (IsDown(input, BUTTON_DOWN))  player1_acceleration -= ACCELERATION_FACTOR;
 #else
-	//AI Agent
-	aiStrategy2(&player1_acceleration);
+		//AI Agent
+		aiStrategy2(&player1_acceleration);
 #endif
 
-	simulatePlayer(&player1_pos, &player1_velocity, player1_acceleration, delta);
+		simulatePlayer(&player1_pos, &player1_velocity, player1_acceleration, delta);
 
 
 
-	/*******************************************************************************************/
-	// Player 2 Settings
-	float player2_acceleration = 0.f;
-	if (IsDown(input, BUTTON_W)) {
-		player2_acceleration += ACCELERATION_FACTOR;
-	}
+		/*******************************************************************************************/
+		// Player 2 Settings
+		float player2_acceleration = 0.f;
+		if (IsDown(input, BUTTON_W)) {
+			player2_acceleration += ACCELERATION_FACTOR;
+		}
 
-	if (IsDown(input, BUTTON_S)) {
-		player2_acceleration -= ACCELERATION_FACTOR;
-	}
+		if (IsDown(input, BUTTON_S)) {
+			player2_acceleration -= ACCELERATION_FACTOR;
+		}
 
-	simulatePlayer(&player2_pos, &player2_velocity, player2_acceleration, delta);
+		simulatePlayer(&player2_pos, &player2_velocity, player2_acceleration, delta);
 
-	/*******************************************************************************************/
-	// Ball
-	{
-		//move towards player 1
-		ball_posX += ball_velX * delta;
-		ball_posY += ball_velY * delta;
-
-		// Ball Collision on the right Player
-		if (ball_posX + ballHalfSize > 80 - playerHalfSizeX &&
-			ball_posX - ballHalfSize < 80 + playerHalfSizeX &&
-			ball_posY + ballHalfSize > player1_pos - playerHalfSizeY &&
-			ball_posY + ballHalfSize < player1_pos + playerHalfSizeY)
+		/*******************************************************************************************/
+		// Ball
 		{
-			// Change the ball x direction to the opposite side
-			ball_posX = 80 - playerHalfSizeX - ballHalfSize;
-			ball_velX *= -1;
+			//move towards player 1
+			ball_posX += ball_velX * delta;
+			ball_posY += ball_velY * delta;
 
-			// Change Y velocity according to the player velocity
-			// ball_velY = player1_velocity * ball_velocity_coef;
+			// Ball Collision on the right Player
+			if (ball_posX + ballHalfSize > 80 - playerHalfSizeX &&
+				ball_posX - ballHalfSize < 80 + playerHalfSizeX &&
+				ball_posY + ballHalfSize > player1_pos - playerHalfSizeY &&
+				ball_posY + ballHalfSize < player1_pos + playerHalfSizeY)
+			{
+				// Change the ball x direction to the opposite side
+				ball_posX = 80 - playerHalfSizeX - ballHalfSize;
+				ball_velX *= -1;
 
-			// Make the ball go up or down depends on where ball hit the player
-			// Depends on how far the ball center to the player
-			// ball_velY = (ball_posY - player1_pos) * ball_velocity_coef;
+				// Change Y velocity according to the player velocity
+				// ball_velY = player1_velocity * ball_velocity_coef;
 
-			// Depends on how far the ball center to the player  AND Player Velocity
-			ball_velY = (ball_posY - player1_pos) * ball_velocity_coef + player1_velocity * ball_velocity_coef;
+				// Make the ball go up or down depends on where ball hit the player
+				// Depends on how far the ball center to the player
+				// ball_velY = (ball_posY - player1_pos) * ball_velocity_coef;
+
+				// Depends on how far the ball center to the player  AND Player Velocity
+				ball_velY = (ball_posY - player1_pos) * ball_velocity_coef + player1_velocity * ball_velocity_coef;
+			}
+
+			// Ball Collision on the left Player
+			if (ball_posX + ballHalfSize > -80 - playerHalfSizeX &&
+				ball_posX - ballHalfSize < -80 + playerHalfSizeX &&
+				ball_posY + ballHalfSize > player2_pos - playerHalfSizeY &&
+				ball_posY + ballHalfSize < player2_pos + playerHalfSizeY)
+			{
+				ball_posX = -80 + playerHalfSizeX + ballHalfSize;
+				ball_velX *= -1;
+
+				// Depends on how far the ball center to the player  AND Player Velocity
+				ball_velY = (ball_posY - player2_pos) * ball_velocity_coef + player2_velocity * ball_velocity_coef;
+			}
+
+
+			// Ball Collision to the Top Wall
+			if (ball_posY + ballHalfSize > arenaHalfSizeY) {
+				ball_posY = arenaHalfSizeY - ballHalfSize;
+				ball_velY *= -1;
+			}
+
+			// Ball Collision to the Bottom Wall
+			if (ball_posY - ballHalfSize < -arenaHalfSizeY) {
+				ball_posY = -arenaHalfSizeY + ballHalfSize;
+				ball_velY *= -1;
+			}
+
+			// Reset Ball and give it to opposite player
+			resetBallMoveItToOtherPlayer();
 		}
 
-		// Ball Collision on the left Player
-		if (ball_posX + ballHalfSize > -80 - playerHalfSizeX &&
-			ball_posX - ballHalfSize < -80 + playerHalfSizeX &&
-			ball_posY + ballHalfSize > player2_pos - playerHalfSizeY &&
-			ball_posY + ballHalfSize < player2_pos + playerHalfSizeY)
-		{
-			ball_posX = -80 + playerHalfSizeX + ballHalfSize;
-			ball_velX *= -1;
+		// Draw Score
+		drawNumber(player1_score, -10, 40, 1.f, 0xbbffbb);
+		drawNumber(player2_score, 10, 40, 1.f, 0xbbffbb);
 
-			// Depends on how far the ball center to the player  AND Player Velocity
-			ball_velY = (ball_posY - player2_pos) * ball_velocity_coef + player2_velocity * ball_velocity_coef;
-		}
+		// Draw the ball
+		drawRect(ball_posX, ball_posY, ballHalfSize, ballHalfSize, 0x000000);
 
+		// Right Player
+		drawRect(80, player1_pos, playerHalfSizeX, playerHalfSizeY, 0xffC0A0);
 
-		// Ball Collision to the Top Wall
-		if (ball_posY + ballHalfSize > arenaHalfSizeY) {
-			ball_posY = arenaHalfSizeY - ballHalfSize;
-			ball_velY *= -1;
-		}
-
-		// Ball Collision to the Bottom Wall
-		if (ball_posY - ballHalfSize < -arenaHalfSizeY) {
-			ball_posY = -arenaHalfSizeY + ballHalfSize;
-			ball_velY *= -1;
-		}
-
-		// Reset Ball and give it to opposite player
-		resetBallMoveItToOtherPlayer();
+		// Left Player
+		drawRect(-80, player2_pos, playerHalfSizeX, playerHalfSizeY, 0xff0022);
 	}
 
-	// Draw Score
-	drawNumber(player1_score, -10, 40, 1.f, 0xbbffbb);
-	drawNumber(player2_score, 10, 40, 1.f, 0xbbffbb);
-
-	// Draw the ball
-	drawRect(ball_posX, ball_posY, ballHalfSize, ballHalfSize, 0x000000);
-
-	// Right Player
-	drawRect(80, player1_pos, playerHalfSizeX, playerHalfSizeY, 0xffC0A0);
-
-	// Left Player
-	drawRect(-80, player2_pos, playerHalfSizeX, playerHalfSizeY, 0xff0022);
+	if (currentGameMode == GM_MENU) {
+		if (IsPressed(input,BUTTON_LEFT) ||IsPressed(input,BUTTON_RIGHT)) {
+			selectedButton = !selectedButton;
+		}
+		 
+		if (!selectedButton) {
+			drawRect(10, 10, 5, 5, 0xFF0000);
+			drawRect(-10, 10, 5, 5, 0xAAccDD);
+		}
+		else {
+			drawRect(10, 10, 5, 5, 0xAAccDD);
+			drawRect(-10, 10, 5, 5, 0xFF0000);
+		}
+		
+	}
 }
 
 static void drawNumber(int number, float x, float y, float size, unsigned int color) {

@@ -82,6 +82,12 @@ void processMessages(MSG message, Input& input) {
 		case VK_DOWN:
 			processKeys(input, BUTTON_DOWN, VK_DOWN, isDown);
 			break;
+		case VK_LEFT:
+			processKeys(input, BUTTON_LEFT, VK_LEFT, isDown);
+			break;
+		case VK_RIGHT:
+			processKeys(input, BUTTON_RIGHT, VK_RIGHT, isDown);
+			break;
 		case 'W':
 			processKeys(input, BUTTON_W, 'W', isDown);
 			break;
