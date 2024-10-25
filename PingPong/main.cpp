@@ -1,6 +1,5 @@
 #include "utilities.cpp"
 #include <Windows.h>
-using namespace std;
 
 global_variable bool isRunning = true;
 

@@ -248,6 +248,7 @@ const char* letters[][7] = {
 	"0",
 };
 static void drawNumber(int number, float x, float y, float size, unsigned int color);
+static void drawText(const char* text, float x, float y, float size, unsigned int color);
 //***************************************************************************************
 
 // Key Handling
@@ -287,7 +288,6 @@ static void simulatePlayer(float* position, float* velocity, float acceleration,
 		*position = -arenaHalfSizeY + playerHalfSizeY;
 		*velocity = 0;
 	}
-
 }
 
 static void resetBallMoveItToOtherPlayer() {
@@ -436,6 +436,9 @@ static void simulateGame(Input* input, float delta) {
 	}
 
 	if (currentGameMode == GM_MENU) {
+
+		drawText("AI", 0, 0, 1, 0x145264);
+
 		if (IsPressed(input, BUTTON_LEFT) || IsPressed(input, BUTTON_RIGHT)) {
 			selectedButton = !selectedButton;
 		}
@@ -452,7 +455,6 @@ static void simulateGame(Input* input, float delta) {
 			drawRect(10, 10, 5, 5, 0xAAccDD);
 			drawRect(-10, 10, 5, 5, 0xFF0000);
 		}
-
 	}
 }
 
@@ -548,4 +550,33 @@ static void drawNumber(int number, float x, float y, float size, unsigned int co
 
 	}
 
+}
+
+static void drawText(const char* text, float x, float y, float size, unsigned int color) {
+
+	float halfSize = size * .5f;
+	float originalY = y;
+
+	while (*text) {
+		const char** letter = letters[*text-'A'];
+		float originalX = x;
+		for (int i = 0; i < 7; i++) {
+			const char* row = letter[i];
+			while (*row) {
+				if (*row == '0') {
+					drawRect(x, y, halfSize, halfSize, color);
+				}
+				x += size;
+				row++;
+			}
+			y -= size;
+			x = originalX;
+		}
+		//move to next letter
+		text++;
+		// move to next x-axis 
+		x += size * 6.f;
+		//
+		y = originalY;
+	}
 }
