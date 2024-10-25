@@ -160,6 +160,22 @@ static void simulateGame(Input* input, float delta) {
 	}
 
 
+	// Reset Ball and give it to opposite player
+	if (ball_posX + ballHalfSize > arenaHalfSizeX) {
+		ball_velX *= -1;
+		ball_velY = 0;
+		ball_posX = 0;
+		ball_posY = 0;
+	}
+
+	if (ball_posX + ballHalfSize < -arenaHalfSizeX) {
+		ball_velX *= -1;
+		ball_velY = 0;
+		ball_posX = 0;
+		ball_posY = 0;
+	}
+
+
 	// Draw the ball
 	drawRect(ball_posX, ball_posY, ballHalfSize, ballHalfSize, 0x000000);
 
