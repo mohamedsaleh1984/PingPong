@@ -576,7 +576,7 @@ static void drawText(const char* text, float x, float y, float size, unsigned in
 		text++;
 		// move to next x-axis 
 		x += size * 6.f;
-		//
+		// move to original y position.
 		y = originalY;
 	}
 }
