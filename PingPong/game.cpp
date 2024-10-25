@@ -16,6 +16,7 @@ float ball_posY = 0.f;
 float ball_velX = 100.f;
 float ball_velY = 0.f;
 float ballHalfSize = 1.f;
+const float ball_velocity_coef = 0.75;
 
 
 // Key Handling
@@ -39,7 +40,7 @@ static void simulateGame(Input* input, float delta) {
 
 	/******************************************************************************************/
 	// Player 1 Settings
-	float player1_acceleration = 0.f;	
+	float player1_acceleration = 0.f;
 	if (IsDown(input, BUTTON_UP)) {
 		player1_acceleration += ACCELERATION_FACTOR;
 	}
@@ -105,21 +106,33 @@ static void simulateGame(Input* input, float delta) {
 	}
 
 
-	/*******************************************************************************************/	
+	/*******************************************************************************************/
 	// Ball
 	//move towards player 1
 	ball_posX += ball_velX * delta;
 	ball_posY += ball_velY * delta;
 
 	// Ball Collision on the right Player
-	if (ball_posX + ballHalfSize > 80 - playerHalfSizeX && 
+	if (ball_posX + ballHalfSize > 80 - playerHalfSizeX &&
 		ball_posX - ballHalfSize < 80 + playerHalfSizeX &&
 		ball_posY + ballHalfSize > player1_pos - playerHalfSizeY &&
 		ball_posY + ballHalfSize < player1_pos + playerHalfSizeY)
 	{
+		// Change the ball x direction to the opposite side
 		ball_posX = 80 - playerHalfSizeX - ballHalfSize;
 		ball_velX *= -1;
+
+		// Change Y velocity according to the player velocity
+		// ball_velY = player1_velocity * ball_velocity_coef;
+
+		// Make the ball go up or down depends on where ball hit the player
+		// Depends on how far the ball center to the player
+		// ball_velY = (ball_posY - player1_pos) * ball_velocity_coef;
+
+		// Depends on how far the ball center to the player  AND Player Velocity
+		ball_velY = (ball_posY - player1_pos) * ball_velocity_coef + player1_velocity * ball_velocity_coef;
 	}
+
 	// Ball Collision on the left Player
 	if (ball_posX + ballHalfSize > -80 - playerHalfSizeX &&
 		ball_posX - ballHalfSize < -80 + playerHalfSizeX &&
@@ -128,7 +141,24 @@ static void simulateGame(Input* input, float delta) {
 	{
 		ball_posX = -80 + playerHalfSizeX + ballHalfSize;
 		ball_velX *= -1;
+
+		// Depends on how far the ball center to the player  AND Player Velocity
+		ball_velY = (ball_posY - player2_pos) * ball_velocity_coef + player2_velocity * ball_velocity_coef;
 	}
+
+
+	// Ball Collision to the Top Wall
+	if (ball_posY + ballHalfSize > arenaHalfSizeY) {
+		ball_posY = arenaHalfSizeY - ballHalfSize;
+		ball_velY *= -1;
+	}
+
+	// Ball Collision to the Bottom Wall
+	if (ball_posY - ballHalfSize < arenaHalfSizeY) {
+		ball_posY = -arenaHalfSizeY + ballHalfSize;
+		ball_velY *= -1;
+	}
+
 
 	// Draw the ball
 	drawRect(ball_posX, ball_posY, ballHalfSize, ballHalfSize, 0x000000);
