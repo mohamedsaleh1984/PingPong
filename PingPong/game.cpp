@@ -1,3 +1,4 @@
+// players vars
 float player1_pos = 0.f;
 float player1_velocity = 0.f;
 float player2_pos = 0.f;
@@ -5,15 +6,16 @@ float player2_velocity = 0.f;
 const float ACCELERATION_FACTOR = 2000.0f;
 const float ACCELERATION_BREAKER_FACTOR = 10.0f;
 float arenaHalfSizeX = 85, arenaHalfSizeY = 45;
+int player1_score = 0, player2_score = 0;
 
 // collision vars
-float playerHalfSizeX = 2.5;
-float playerHalfSizeY = 12;
+float playerHalfSizeX = 1.5f;
+float playerHalfSizeY = 8;
 
 // ball velocity and acc
 float ball_posX = 0.f;
 float ball_posY = 0.f;
-float ball_velX = 100.f;
+float ball_velX = 80.f;
 float ball_velY = 0.f;
 float ballHalfSize = 1.f;
 const float ball_velocity_coef = 0.75;
@@ -55,6 +57,38 @@ static void simulatePlayer(float* position, float* velocity, float acceleration,
 		*velocity = 0;
 	}
 
+}
+
+static void resetBallMoveItToOtherPlayer() {
+
+	if (ball_posX + ballHalfSize > arenaHalfSizeX) {
+		ball_velY = 0;
+		ball_posX = 0;
+		ball_posY = 0;
+		ball_velX *= -1;
+		player1_score++;
+	}
+
+	if (ball_posX + ballHalfSize < -arenaHalfSizeX) {
+		ball_velY = 0;
+		ball_posX = 0;
+		ball_posY = 0;
+		ball_velX *= -1;
+		player2_score++;
+	}
+}
+
+static void drawNumber(int number, float x, float y, float size, unsigned int color) {
+	float halfSize = size * .5f;
+	switch (number) {
+	case 0:
+		drawRect(x - size, y, halfSize, 2.5f * size, color);
+		drawRect(x + size, y, halfSize, 2.5f * size, color);
+		drawRect(x, y + size * 2.f, halfSize, halfSize, color);
+		drawRect(x, y - size * 2.f, halfSize, halfSize, color);
+		break;
+
+	}
 }
 
 static void simulateGame(Input* input, float delta) {
@@ -145,23 +179,13 @@ static void simulateGame(Input* input, float delta) {
 			ball_velY *= -1;
 		}
 
-
 		// Reset Ball and give it to opposite player
-		if (ball_posX + ballHalfSize > arenaHalfSizeX) {
-			ball_velX *= -1;
-			ball_velY = 0;
-			ball_posX = 0;
-			ball_posY = 0;
-		}
-
-		if (ball_posX + ballHalfSize < -arenaHalfSizeX) {
-			ball_velX *= -1;
-			ball_velY = 0;
-			ball_posX = 0;
-			ball_posY = 0;
-		}
-
+		resetBallMoveItToOtherPlayer();
 	}
+
+	// Draw Score
+	drawNumber(player1_score, -10, 40, 1.f, 0xbbffbb);
+	drawNumber(player2_score, 10, 40, 1.f, 0xbbffbb);
 
 	// Draw the ball
 	drawRect(ball_posX, ball_posY, ballHalfSize, ballHalfSize, 0x000000);
