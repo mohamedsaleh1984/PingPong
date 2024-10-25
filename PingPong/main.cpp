@@ -18,7 +18,7 @@ global_variable RenderState _renderState;
 #include "renderer.cpp";
 #include "game.cpp"
 
-LRESULT CALLBACK window_callback(HWND    hWnd, UINT    Msg, WPARAM  wParam, LPARAM  lParam)
+static LRESULT CALLBACK window_callback(HWND    hWnd, UINT    Msg, WPARAM  wParam, LPARAM  lParam)
 {
 	LRESULT result = 0;
 

@@ -309,7 +309,16 @@ static void resetBallMoveItToOtherPlayer() {
 	}
 }
 
+static void aiStrategy1(float* player1_acceleration) {
+	if (ball_posY > player1_pos + 2.f)*player1_acceleration += 1300;
+	if (ball_posY < player1_pos - 2.f)*player1_acceleration -= 1300;
+}
 
+static void aiStrategy2(float* player1_acceleration) {
+	*player1_acceleration = (ball_posY - player1_pos) * 100;
+	if (*player1_acceleration > 1300)*player1_acceleration = 1300;
+	if (*player1_acceleration < -1300)*player1_acceleration = -1300;
+}
 
 static void simulateGame(Input* input, float delta) {
 	clearScreen(0xff5500);
@@ -320,13 +329,13 @@ static void simulateGame(Input* input, float delta) {
 	/******************************************************************************************/
 	// Player 1 Settings
 	float player1_acceleration = 0.f;
-	if (IsDown(input, BUTTON_UP)) {
-		player1_acceleration += ACCELERATION_FACTOR;
-	}
-
-	if (IsDown(input, BUTTON_DOWN)) {
-		player1_acceleration -= ACCELERATION_FACTOR;
-	}
+#if 0
+	if (IsDown(input, BUTTON_UP)) player1_acceleration += ACCELERATION_FACTOR;
+	if (IsDown(input, BUTTON_DOWN))  player1_acceleration -= ACCELERATION_FACTOR;
+#else
+	//AI Agent
+	aiStrategy2(&player1_acceleration);
+#endif
 
 	simulatePlayer(&player1_pos, &player1_velocity, player1_acceleration, delta);
 
@@ -416,8 +425,6 @@ static void simulateGame(Input* input, float delta) {
 	// Left Player
 	drawRect(-80, player2_pos, playerHalfSizeX, playerHalfSizeY, 0xff0022);
 }
-
-
 
 static void drawNumber(int number, float x, float y, float size, unsigned int color) {
 	float halfSize = size * .5f;
