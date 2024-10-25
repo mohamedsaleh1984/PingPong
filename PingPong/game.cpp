@@ -154,7 +154,7 @@ static void simulateGame(Input* input, float delta) {
 	}
 
 	// Ball Collision to the Bottom Wall
-	if (ball_posY - ballHalfSize < arenaHalfSizeY) {
+	if (ball_posY - ballHalfSize < -arenaHalfSizeY) {
 		ball_posY = -arenaHalfSizeY + ballHalfSize;
 		ball_velY *= -1;
 	}
