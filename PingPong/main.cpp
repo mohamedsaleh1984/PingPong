@@ -62,7 +62,7 @@ LRESULT CALLBACK window_callback(HWND    hWnd, UINT    Msg, WPARAM  wParam, LPAR
 	return result;
 }
 
-void processKeys(Input& input,int button, unsigned int vk, bool isDown) {
+void processKeys(Input& input, int button, unsigned int vk, bool isDown) {
 	input.buttons[button].isDown = isDown;
 	input.buttons[button].changed = true;
 }
@@ -117,11 +117,25 @@ int  WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR     lpCmdLine, 
 	// keyboard 
 	Input input = {};
 
+	// Time Calculations
+	// 1/60 => 0.0166666666666667
+	float deltaTime = 0.016666f;
+
+	//Current CPU Time
+	LARGE_INTEGER frameStartAt;
+	QueryPerformanceCounter(&frameStartAt);
+
+	// CPU Time
+	float performance_frequency;
+	LARGE_INTEGER perf;
+	QueryPerformanceFrequency(&perf);
+	performance_frequency = perf.QuadPart;
+
+
 	// Main Windows Loop
 	while (isRunning) {
 		// Input
 		MSG message;
-
 
 		// reset keyboard buttons click status
 		{
@@ -136,18 +150,26 @@ int  WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR     lpCmdLine, 
 		}
 
 		//  Simulate
-		simulateGame(&input);
+		simulateGame(&input, deltaTime);
 
 		//	Render
-		StretchDIBits(hdc, 0, 0,
-			_renderState.width,
-			_renderState.height, 0, 0,
-			_renderState.width,
-			_renderState.height,
-			_renderState.bufferMemory,
-			&_renderState.bufferBitmapInfo, DIB_RGB_COLORS, SRCCOPY);
-	}
+		{
+			StretchDIBits(hdc, 0, 0,
+				_renderState.width,
+				_renderState.height, 0, 0,
+				_renderState.width,
+				_renderState.height,
+				_renderState.bufferMemory,
+				&_renderState.bufferBitmapInfo, DIB_RGB_COLORS, SRCCOPY);
+		}
 
+		LARGE_INTEGER frameEndAt;
+		QueryPerformanceCounter(&frameEndAt);
+		//Delta Time in Seconds
+		deltaTime = (float)(frameEndAt.QuadPart - frameStartAt.QuadPart) / performance_frequency;
+		//reset the start frame time;
+		frameStartAt = frameEndAt;
+	}
 
 	return 0;
 };
