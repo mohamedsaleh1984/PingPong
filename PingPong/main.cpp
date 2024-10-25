@@ -63,8 +63,9 @@ LRESULT CALLBACK window_callback(HWND    hWnd, UINT    Msg, WPARAM  wParam, LPAR
 }
 
 void processKeys(Input& input, int button, unsigned int vk, bool isDown) {
+	input.buttons[button].changed = isDown != input.buttons[button].isDown;
 	input.buttons[button].isDown = isDown;
-	input.buttons[button].changed = true;
+	
 }
 
 void processMessages(MSG message, Input& input) {
@@ -117,7 +118,7 @@ int  WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR     lpCmdLine, 
 	// keyboard 
 	Input input = {};
 
-	// Time Calculations
+	// Time Calculations (FPS 60)
 	// 1/60 => 0.0166666666666667
 	float deltaTime = 0.016666f;
 

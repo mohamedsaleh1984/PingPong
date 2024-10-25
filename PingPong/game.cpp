@@ -8,31 +8,28 @@ bool IsReleased(Input* input, enumButtons button) {
 	return !(input->buttons[button].isDown && input->buttons[button].changed);
 }
 
-float player_pos_x = 0.f;
-float player_pos_y = 0.f;
-
-
+float player_pos = 0.f;
 
 internal void simulateGame(Input* input, float delta) {
 	clearScreen(0xff5500);
-	float speed = 50.f;
+
+	// arena
+	drawRect(0, 0, 85, 45, 0xffaa33);
+
+	float speed = 50.0f;
+
 	if (IsDown(input,BUTTON_UP)) {
-		player_pos_y += speed* delta;
+		player_pos += speed * delta;
 	}
 
 	if (IsDown(input, BUTTON_DOWN)) {
-		player_pos_y -= speed* delta;
+		player_pos -= speed * delta;
 	}
 
-	if (IsDown(input, BUTTON_LEFT)) {
-		player_pos_x -= speed* delta;
-	}
 
-	if (IsDown(input, BUTTON_RIGHT)) {
-		player_pos_x += speed* delta;
-	}
-
-	drawRect(player_pos_x, player_pos_y, 1, 1, 0xff0000);
-	drawRect(30, 40, 5, 5, 0xffC0A0);
-	drawRect(-20, 20, 8, 8, 0xff0022);/**/
+	drawRect(0, 0, 1, 1, 0x000000);
+	//Right
+	drawRect(80, player_pos, 2.5, 12, 0xffC0A0);
+	//Left
+	drawRect(-80, 0, 2.5, 12, 0xff0022);
 }
