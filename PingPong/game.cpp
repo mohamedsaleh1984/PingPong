@@ -581,12 +581,12 @@ static void drawText(const char* text, float x, float y, float size, unsigned in
 
 static void drawMenu() {
 	if (!selectedButton) {
-		drawText("SINGLE PLAYER", -80, -10, 1, 0xff0000);
-		drawText("MULTIPLAYER", 20, -10, 1, 0xaaaaaa);
+		drawText("SINGLE PLAYER", -80, 20, 1, 0xff0000);
+		drawText("MULTIPLAYER", 20, 20, 1, 0xaaaaaa);
 
 	}
 	else {
-		drawText("SINGLE PLAYER", -80, -10, 1, 0xaaaaaa);
-		drawText("MULTIPLAYER", 20, -10, 1, 0xff0000);
+		drawText("SINGLE PLAYER", -80, 20, 1, 0xaaaaaa);
+		drawText("MULTIPLAYER", 20, 20, 1, 0xff0000);
 	}
 }

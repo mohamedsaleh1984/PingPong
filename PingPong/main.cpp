@@ -109,6 +109,7 @@ void processMessages(MSG message, Input& input) {
 
 int  WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR     lpCmdLine, int       nShowCmd)
 {
+	ShowCursor(false);
 	// Window class
 	WNDCLASS window_class = {};
 	window_class.style = CS_HREDRAW | CS_VREDRAW;
@@ -120,7 +121,7 @@ int  WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR     lpCmdLine, 
 
 	// Create window
 	unsigned int styles = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
-	HWND windowHandle = CreateWindow(window_class.lpszClassName, L"My First Game", styles, CW_USEDEFAULT, CW_USEDEFAULT, 1280, 720, 0, 0, hInstance, 0);
+	HWND windowHandle = CreateWindow(window_class.lpszClassName, L"Pong", styles, CW_USEDEFAULT, CW_USEDEFAULT, 1280, 720, 0, 0, hInstance, 0);
 	HDC hdc = GetDC(windowHandle);
 
 	// keyboard 
