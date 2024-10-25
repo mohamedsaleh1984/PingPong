@@ -1,25 +1,27 @@
-bool IsDown(Input* input, enumButtons button) {
-	return input->buttons[button].isDown;
-}
-bool IsPressed(Input* input, enumButtons button) {
-	return input->buttons[button].isDown && input->buttons[button].changed;
-}
-bool IsReleased(Input* input, enumButtons button) {
-	return !(input->buttons[button].isDown && input->buttons[button].changed);
-}
-
 float player1_pos = 0.f;
 float player1_velocity = 0.f;
 float player2_pos = 0.f;
 float player2_velocity = 0.f;
 const float ACCELERATION_FACTOR = 2000.0f;
 const float ACCELERATION_BREAKER_FACTOR = 10.0f;
+float arenaHalfSizeX = 85, arenaHalfSizeY = 45;
 
-internal void simulateGame(Input* input, float delta) {
+static bool IsDown(Input* input, enumButtons button) {
+	return input->buttons[button].isDown;
+}
+static bool IsPressed(Input* input, enumButtons button) {
+	return input->buttons[button].isDown && input->buttons[button].changed;
+}
+static bool IsReleased(Input* input, enumButtons button) {
+	return !(input->buttons[button].isDown && input->buttons[button].changed);
+}
+
+
+static void simulateGame(Input* input, float delta) {
 	clearScreen(0xff5500);
 
 	// arena
-	drawRect(0, 0, 85, 45, 0xffaa33);
+	drawRect(0, 0, arenaHalfSizeX, arenaHalfSizeY, 0xffaa33);
 	// Ball
 	drawRect(0, 0, 1, 1, 0x000000);
 	/******************************************************************************************/
