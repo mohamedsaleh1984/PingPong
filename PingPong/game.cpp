@@ -1,3 +1,4 @@
+#include "utilities.cpp"
 // players vars
 float player1_pos = 0.f;
 float player1_velocity = 0.f;
@@ -15,19 +16,249 @@ float playerHalfSizeY = 8;
 // ball velocity and acc
 float ball_posX = 0.f;
 float ball_posY = 0.f;
-float ball_velX = 80.f;
+float ball_velX = 150.f;
 float ball_velY = 0.f;
 float ballHalfSize = 1.f;
 const float ball_velocity_coef = 0.75;
 
+// letters and numbers
+const char* letters[][7] = {
+	" 00",
+	"0  0",
+	"0  0",
+	"0000",
+	"0  0",
+	"0  0",
+	"0  0",
+
+	"000",
+	"0  0",
+	"0  0",
+	"000",
+	"0  0",
+	"0  0",
+	"000",
+
+	" 000",
+	"0",
+	"0",
+	"0",
+	"0",
+	"0",
+	" 000",
+
+	"000",
+	"0  0",
+	"0  0",
+	"0  0",
+	"0  0",
+	"0  0",
+	"000",
+
+	"0000",
+	"0",
+	"0",
+	"000",
+	"0",
+	"0",
+	"0000",
+
+	"0000",
+	"0",
+	"0",
+	"000",
+	"0",
+	"0",
+	"0",
+
+	" 000",
+	"0",
+	"0",
+	"0 00",
+	"0  0",
+	"0  0",
+	" 000",
+
+	"0  0",
+	"0  0",
+	"0  0",
+	"0000",
+	"0  0",
+	"0  0",
+	"0  0",
+
+	"000",
+	" 0",
+	" 0",
+	" 0",
+	" 0",
+	" 0",
+	"000",
+
+	" 000",
+	"   0",
+	"   0",
+	"   0",
+	"0  0",
+	"0  0",
+	" 000",
+
+	"0  0",
+	"0  0",
+	"0 0",
+	"00",
+	"0 0",
+	"0  0",
+	"0  0",
+
+	"0",
+	"0",
+	"0",
+	"0",
+	"0",
+	"0",
+	"0000",
+
+	"00 00",
+	"0 0 0",
+	"0 0 0",
+	"0   0",
+	"0   0",
+	"0   0",
+	"0   0",
+
+	"00  0",
+	"0 0 0",
+	"0 0 0",
+	"0 0 0",
+	"0 0 0",
+	"0 0 0",
+	"0  00",
+
+	"0000",
+	"0  0",
+	"0  0",
+	"0  0",
+	"0  0",
+	"0  0",
+	"0000",
+
+	" 000",
+	"0  0",
+	"0  0",
+	"000",
+	"0",
+	"0",
+	"0",
+
+	" 000 ",
+	"0   0",
+	"0   0",
+	"0   0",
+	"0 0 0",
+	"0  0 ",
+	" 00 0",
+
+	"000",
+	"0  0",
+	"0  0",
+	"000",
+	"0  0",
+	"0  0",
+	"0  0",
+
+	" 000",
+	"0",
+	"0 ",
+	" 00",
+	"   0",
+	"   0",
+	"000 ",
+
+	"000",
+	" 0",
+	" 0",
+	" 0",
+	" 0",
+	" 0",
+	" 0",
+
+	"0  0",
+	"0  0",
+	"0  0",
+	"0  0",
+	"0  0",
+	"0  0",
+	" 00",
+
+	"0   0",
+	"0   0",
+	"0   0",
+	"0   0",
+	"0   0",
+	" 0 0",
+	"  0",
+
+	"0   0 ",
+	"0   0",
+	"0   0",
+	"0 0 0",
+	"0 0 0",
+	"0 0 0",
+	" 0 0 ",
+
+	"0   0",
+	"0   0",
+	" 0 0",
+	"  0",
+	" 0 0",
+	"0   0",
+	"0   0",
+
+	"0   0",
+	"0   0",
+	" 0 0",
+	"  0",
+	"  0",
+	"  0",
+	"  0",
+
+	"0000",
+	"   0",
+	"  0",
+	" 0",
+	"0",
+	"0",
+	"0000",
+
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"0",
+
+	"   0",
+	"  0",
+	"  0",
+	" 0",
+	" 0",
+	"0",
+	"0",
+};
+static void drawNumber(int number, float x, float y, float size, unsigned int color);
+//***************************************************************************************
 
 // Key Handling
 static bool IsDown(Input* input, enumButtons button) {
 	return input->buttons[button].isDown;
 }
+
 static bool IsPressed(Input* input, enumButtons button) {
 	return input->buttons[button].isDown && input->buttons[button].changed;
 }
+
 static bool IsReleased(Input* input, enumButtons button) {
 	return !(input->buttons[button].isDown && input->buttons[button].changed);
 }
@@ -78,18 +309,7 @@ static void resetBallMoveItToOtherPlayer() {
 	}
 }
 
-static void drawNumber(int number, float x, float y, float size, unsigned int color) {
-	float halfSize = size * .5f;
-	switch (number) {
-	case 0:
-		drawRect(x - size, y, halfSize, 2.5f * size, color);
-		drawRect(x + size, y, halfSize, 2.5f * size, color);
-		drawRect(x, y + size * 2.f, halfSize, halfSize, color);
-		drawRect(x, y - size * 2.f, halfSize, halfSize, color);
-		break;
 
-	}
-}
 
 static void simulateGame(Input* input, float delta) {
 	clearScreen(0xff5500);
@@ -195,4 +415,100 @@ static void simulateGame(Input* input, float delta) {
 
 	// Left Player
 	drawRect(-80, player2_pos, playerHalfSizeX, playerHalfSizeY, 0xff0022);
+}
+
+
+
+static void drawNumber(int number, float x, float y, float size, unsigned int color) {
+	float halfSize = size * .5f;
+	bool drew_number = false;
+	while (number || !drew_number) {
+		drew_number = true;
+
+		int digit = number % 10;
+		number = number / 10;
+
+		switch (digit) {
+		case 0: {
+			drawRect(x - size, y, halfSize, 2.5f * size, color);
+			drawRect(x + size, y, halfSize, 2.5f * size, color);
+			drawRect(x, y + size * 2.f, halfSize, halfSize, color);
+			drawRect(x, y - size * 2.f, halfSize, halfSize, color);
+			x -= size * 4.f;
+		} break;
+
+		case 1: {
+			drawRect(x + size, y, halfSize, 2.5f * size, color);
+			x -= size * 2.f;
+		} break;
+
+		case 2: {
+			drawRect(x, y + size * 2.f, 1.5f * size, halfSize, color);
+			drawRect(x, y, 1.5f * size, halfSize, color);
+			drawRect(x, y - size * 2.f, 1.5f * size, halfSize, color);
+			drawRect(x + size, y + size, halfSize, halfSize, color);
+			drawRect(x - size, y - size, halfSize, halfSize, color);
+			x -= size * 4.f;
+		} break;
+
+		case 3: {
+			drawRect(x - halfSize, y + size * 2.f, size, halfSize, color);
+			drawRect(x - halfSize, y, size, halfSize, color);
+			drawRect(x - halfSize, y - size * 2.f, size, halfSize, color);
+			drawRect(x + size, y, halfSize, 2.5f * size, color);
+			x -= size * 4.f;
+		} break;
+
+		case 4: {
+			drawRect(x + size, y, halfSize, 2.5f * size, color);
+			drawRect(x - size, y + size, halfSize, 1.5f * size, color);
+			drawRect(x, y, halfSize, halfSize, color);
+			x -= size * 4.f;
+		} break;
+
+		case 5: {
+			drawRect(x, y + size * 2.f, 1.5f * size, halfSize, color);
+			drawRect(x, y, 1.5f * size, halfSize, color);
+			drawRect(x, y - size * 2.f, 1.5f * size, halfSize, color);
+			drawRect(x - size, y + size, halfSize, halfSize, color);
+			drawRect(x + size, y - size, halfSize, halfSize, color);
+			x -= size * 4.f;
+		} break;
+
+		case 6: {
+			drawRect(x + halfSize, y + size * 2.f, size, halfSize, color);
+			drawRect(x + halfSize, y, size, halfSize, color);
+			drawRect(x + halfSize, y - size * 2.f, size, halfSize, color);
+			drawRect(x - size, y, halfSize, 2.5f * size, color);
+			drawRect(x + size, y - size, halfSize, halfSize, color);
+			x -= size * 4.f;
+		} break;
+
+		case 7: {
+			drawRect(x + size, y, halfSize, 2.5f * size, color);
+			drawRect(x - halfSize, y + size * 2.f, size, halfSize, color);
+			x -= size * 4.f;
+		} break;
+
+		case 8: {
+			drawRect(x - size, y, halfSize, 2.5f * size, color);
+			drawRect(x + size, y, halfSize, 2.5f * size, color);
+			drawRect(x, y + size * 2.f, halfSize, halfSize, color);
+			drawRect(x, y - size * 2.f, halfSize, halfSize, color);
+			drawRect(x, y, halfSize, halfSize, color);
+			x -= size * 4.f;
+		} break;
+
+		case 9: {
+			drawRect(x - halfSize, y + size * 2.f, size, halfSize, color);
+			drawRect(x - halfSize, y, size, halfSize, color);
+			drawRect(x - halfSize, y - size * 2.f, size, halfSize, color);
+			drawRect(x + size, y, halfSize, 2.5f * size, color);
+			drawRect(x - size, y + size, halfSize, halfSize, color);
+			x -= size * 4.f;
+		} break;
+		}
+
+	}
+
 }
