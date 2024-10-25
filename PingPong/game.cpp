@@ -249,6 +249,7 @@ const char* letters[][7] = {
 };
 static void drawNumber(int number, float x, float y, float size, unsigned int color);
 static void drawText(const char* text, float x, float y, float size, unsigned int color);
+static void drawMenu();
 //***************************************************************************************
 
 // Key Handling
@@ -437,7 +438,7 @@ static void simulateGame(Input* input, float delta) {
 
 	if (currentGameMode == GM_MENU) {
 
-		drawText("AI", 0, 0, 1, 0x145264);
+		drawMenu();
 
 		if (IsPressed(input, BUTTON_LEFT) || IsPressed(input, BUTTON_RIGHT)) {
 			selectedButton = !selectedButton;
@@ -447,14 +448,7 @@ static void simulateGame(Input* input, float delta) {
 			currentGameMode = GM_GAMEPLAY;
 		}
 
-		if (!selectedButton) {
-			drawRect(10, 10, 5, 5, 0xFF0000);
-			drawRect(-10, 10, 5, 5, 0xAAccDD);
-		}
-		else {
-			drawRect(10, 10, 5, 5, 0xAAccDD);
-			drawRect(-10, 10, 5, 5, 0xFF0000);
-		}
+		
 	}
 }
 
@@ -582,5 +576,17 @@ static void drawText(const char* text, float x, float y, float size, unsigned in
 		x += size * 6.f;
 		// move to original y position.
 		y = originalY;
+	}
+}
+
+static void drawMenu() {
+	if (!selectedButton) {
+		drawText("SINGLE PLAYER", -80, -10, 1, 0xff0000);
+		drawText("MULTIPLAYER", 20, -10, 1, 0xaaaaaa);
+
+	}
+	else {
+		drawText("SINGLE PLAYER", -80, -10, 1, 0xaaaaaa);
+		drawText("MULTIPLAYER", 20, -10, 1, 0xff0000);
 	}
 }
