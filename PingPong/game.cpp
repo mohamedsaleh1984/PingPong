@@ -558,20 +558,24 @@ static void drawText(const char* text, float x, float y, float size, unsigned in
 	float originalY = y;
 
 	while (*text) {
-		const char** letter = letters[*text-'A'];
-		float originalX = x;
-		for (int i = 0; i < 7; i++) {
-			const char* row = letter[i];
-			while (*row) {
-				if (*row == '0') {
-					drawRect(x, y, halfSize, halfSize, color);
+		// not space character
+		if (*text != 32) {
+			const char** letter = letters[*text - 'A'];
+			float originalX = x;
+			for (int i = 0; i < 7; i++) {
+				const char* row = letter[i];
+				while (*row) {
+					if (*row == '0') {
+						drawRect(x, y, halfSize, halfSize, color);
+					}
+					x += size;
+					row++;
 				}
-				x += size;
-				row++;
+				y -= size;
+				x = originalX;
 			}
-			y -= size;
-			x = originalX;
 		}
+
 		//move to next letter
 		text++;
 		// move to next x-axis 
