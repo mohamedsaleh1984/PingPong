@@ -21,8 +21,6 @@ float ball_velY = 0.f;
 float ballHalfSize = 1.f;
 const float ball_velocity_coef = 0.75;
 
-
-
 // letters and numbers
 const char* letters[][7] = {
 	" 00",
@@ -322,7 +320,6 @@ static void aiStrategy2(float* player1_acceleration) {
 	if (*player1_acceleration < -1300)*player1_acceleration = -1300;
 }
 
-
 // Game Mode
 enum GameMode {
 	GM_MENU,
@@ -330,7 +327,8 @@ enum GameMode {
 };
 
 GameMode currentGameMode = GM_MENU;
-bool selectedButton = 0;
+bool selectedButton = false;
+bool isAiEnemy = selectedButton;
 
 static void simulateGame(Input* input, float delta) {
 	clearScreen(0xff5500);
@@ -342,18 +340,16 @@ static void simulateGame(Input* input, float delta) {
 		/******************************************************************************************/
 		// Player 1 Settings
 		float player1_acceleration = 0.f;
-#if 0
-		if (IsDown(input, BUTTON_UP)) player1_acceleration += ACCELERATION_FACTOR;
-		if (IsDown(input, BUTTON_DOWN))  player1_acceleration -= ACCELERATION_FACTOR;
-#else
-		//AI Agent
-		aiStrategy2(&player1_acceleration);
-#endif
+		if (!isAiEnemy) {
+			if (IsDown(input, BUTTON_UP)) player1_acceleration += ACCELERATION_FACTOR;
+			if (IsDown(input, BUTTON_DOWN))  player1_acceleration -= ACCELERATION_FACTOR;
+		}
+		else {
+			//AI Agent
+			aiStrategy2(&player1_acceleration);
+		}
 
 		simulatePlayer(&player1_pos, &player1_velocity, player1_acceleration, delta);
-
-
-
 		/*******************************************************************************************/
 		// Player 2 Settings
 		float player2_acceleration = 0.f;
@@ -440,10 +436,14 @@ static void simulateGame(Input* input, float delta) {
 	}
 
 	if (currentGameMode == GM_MENU) {
-		if (IsPressed(input,BUTTON_LEFT) ||IsPressed(input,BUTTON_RIGHT)) {
+		if (IsPressed(input, BUTTON_LEFT) || IsPressed(input, BUTTON_RIGHT)) {
 			selectedButton = !selectedButton;
 		}
-		 
+
+		if (IsPressed(input, BUTTON_ENTER)) {
+			currentGameMode = GM_GAMEPLAY;
+		}
+
 		if (!selectedButton) {
 			drawRect(10, 10, 5, 5, 0xFF0000);
 			drawRect(-10, 10, 5, 5, 0xAAccDD);
@@ -452,7 +452,7 @@ static void simulateGame(Input* input, float delta) {
 			drawRect(10, 10, 5, 5, 0xAAccDD);
 			drawRect(-10, 10, 5, 5, 0xFF0000);
 		}
-		
+
 	}
 }
 

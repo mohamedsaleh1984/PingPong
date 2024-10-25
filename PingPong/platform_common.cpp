@@ -8,6 +8,7 @@ enum  enumButtons
 	BUTTON_DOWN,
 	BUTTON_LEFT,
 	BUTTON_RIGHT,
+	BUTTON_ENTER,
 	BUTTON_W,
 	BUTTON_S,
 

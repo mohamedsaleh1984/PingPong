@@ -59,7 +59,7 @@ drawRectInPixels(int x0, int y0, int x1, int y1, unsigned int color) {
 internal void
 drawRect(float x, float y, float halfSizeX, float halfSizeY, unsigned int color) {
 
-	x *= _renderState.height*renderScale;
+	x *= _renderState.height * renderScale;
 	y *= _renderState.height * renderScale;
 	halfSizeX *= _renderState.height * renderScale;
 	halfSizeY *= _renderState.height * renderScale;

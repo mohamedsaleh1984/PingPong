@@ -65,7 +65,7 @@ static LRESULT CALLBACK window_callback(HWND    hWnd, UINT    Msg, WPARAM  wPara
 void processKeys(Input& input, int button, unsigned int vk, bool isDown) {
 	input.buttons[button].changed = isDown != input.buttons[button].isDown;
 	input.buttons[button].isDown = isDown;
-	
+
 }
 
 void processMessages(MSG message, Input& input) {
@@ -87,6 +87,9 @@ void processMessages(MSG message, Input& input) {
 			break;
 		case VK_RIGHT:
 			processKeys(input, BUTTON_RIGHT, VK_RIGHT, isDown);
+			break;
+		case VK_RETURN:
+			processKeys(input, BUTTON_ENTER, VK_RETURN, isDown);
 			break;
 		case 'W':
 			processKeys(input, BUTTON_W, 'W', isDown);
