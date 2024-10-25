@@ -334,6 +334,11 @@ bool isAiEnemy = selectedButton;
 static void simulateGame(Input* input, float delta) {
 	clearScreen(0xff5500);
 
+	// exit game loop on press escape button.
+	if (IsPressed(input, BUTTON_ESCAPE)) {
+		isRunning = false;
+	}
+
 	// arena
 	drawRect(0, 0, arenaHalfSizeX, arenaHalfSizeY, 0xffaa33);
 

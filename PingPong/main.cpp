@@ -64,7 +64,6 @@ static LRESULT CALLBACK window_callback(HWND    hWnd, UINT    Msg, WPARAM  wPara
 void processKeys(Input& input, int button, unsigned int vk, bool isDown) {
 	input.buttons[button].changed = isDown != input.buttons[button].isDown;
 	input.buttons[button].isDown = isDown;
-
 }
 
 void processMessages(MSG message, Input& input) {
@@ -96,6 +95,9 @@ void processMessages(MSG message, Input& input) {
 		case 'S':
 			processKeys(input, BUTTON_S, 'S', isDown);
 			break;
+		case VK_ESCAPE:
+			processKeys(input, BUTTON_ESCAPE, VK_ESCAPE, isDown);
+			break;
 		default:
 			break;
 		}
@@ -122,6 +124,20 @@ int  WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR     lpCmdLine, 
 	// Create window
 	unsigned int styles = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
 	HWND windowHandle = CreateWindow(window_class.lpszClassName, L"Pong", styles, CW_USEDEFAULT, CW_USEDEFAULT, 1280, 720, 0, 0, hInstance, 0);
+	
+	{
+		// Full Screen
+		SetWindowLong(windowHandle, GWL_STYLE, GetWindowLong(windowHandle, GWL_STYLE) & ~WS_OVERLAPPEDWINDOW);
+		MONITORINFO mi = { sizeof(mi) };
+		GetMonitorInfo(MonitorFromWindow(windowHandle, MONITOR_DEFAULTTOPRIMARY), &mi);
+		SetWindowPos(windowHandle, HWND_TOP, mi.rcMonitor.left,
+			mi.rcMonitor.top,
+			mi.rcMonitor.right - mi.rcMonitor.left,
+			mi.rcMonitor.bottom - mi.rcMonitor.top,
+			SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
+	}
+	
+	
 	HDC hdc = GetDC(windowHandle);
 
 	// keyboard 
