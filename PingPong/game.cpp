@@ -5,11 +5,20 @@ float player2_velocity = 0.f;
 const float ACCELERATION_FACTOR = 2000.0f;
 const float ACCELERATION_BREAKER_FACTOR = 10.0f;
 float arenaHalfSizeX = 85, arenaHalfSizeY = 45;
-//collision vars
+
+// collision vars
 float playerHalfSizeX = 2.5;
 float playerHalfSizeY = 12;
 
+// ball velocity and acc
+float ball_posX = 0.f;
+float ball_posY = 0.f;
+float ball_velX = 100.f;
+float ball_velY = 0.f;
+float ballHalfSize = 1.f;
 
+
+// Key Handling
 static bool IsDown(Input* input, enumButtons button) {
 	return input->buttons[button].isDown;
 }
@@ -21,13 +30,13 @@ static bool IsReleased(Input* input, enumButtons button) {
 }
 
 
+
 static void simulateGame(Input* input, float delta) {
 	clearScreen(0xff5500);
 
 	// arena
 	drawRect(0, 0, arenaHalfSizeX, arenaHalfSizeY, 0xffaa33);
-	// Ball
-	drawRect(0, 0, 1, 1, 0x000000);
+
 	/******************************************************************************************/
 	// Player 1 Settings
 	float player1_acceleration = 0.f;	
@@ -63,9 +72,6 @@ static void simulateGame(Input* input, float delta) {
 	}
 
 
-
-	//Right
-	drawRect(80, player1_pos, playerHalfSizeX, playerHalfSizeY, 0xffC0A0);
 	/*******************************************************************************************/
 	// Player 2 Settings
 	float player2_acceleration = 0.f;
@@ -98,7 +104,38 @@ static void simulateGame(Input* input, float delta) {
 		player2_velocity = 0;
 	}
 
-	// Left
-	drawRect(-80, player2_pos, playerHalfSizeX, playerHalfSizeY, 0xff0022);
+
 	/*******************************************************************************************/	
+	// Ball
+	//move towards player 1
+	ball_posX += ball_velX * delta;
+	ball_posY += ball_velY * delta;
+
+	// Ball Collision on the right Player
+	if (ball_posX + ballHalfSize > 80 - playerHalfSizeX && 
+		ball_posX - ballHalfSize < 80 + playerHalfSizeX &&
+		ball_posY + ballHalfSize > player1_pos - playerHalfSizeY &&
+		ball_posY + ballHalfSize < player1_pos + playerHalfSizeY)
+	{
+		ball_posX = 80 - playerHalfSizeX - ballHalfSize;
+		ball_velX *= -1;
+	}
+	// Ball Collision on the left Player
+	if (ball_posX + ballHalfSize > -80 - playerHalfSizeX &&
+		ball_posX - ballHalfSize < -80 + playerHalfSizeX &&
+		ball_posY + ballHalfSize > player2_pos - playerHalfSizeY &&
+		ball_posY + ballHalfSize < player2_pos + playerHalfSizeY)
+	{
+		ball_posX = -80 + playerHalfSizeX + ballHalfSize;
+		ball_velX *= -1;
+	}
+
+	// Draw the ball
+	drawRect(ball_posX, ball_posY, ballHalfSize, ballHalfSize, 0x000000);
+
+
+	// Right Player
+	drawRect(80, player1_pos, playerHalfSizeX, playerHalfSizeY, 0xffC0A0);
+	// Left Player
+	drawRect(-80, player2_pos, playerHalfSizeX, playerHalfSizeY, 0xff0022);
 }
